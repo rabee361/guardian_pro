@@ -1,0 +1,26 @@
+version: '3.9'
+
+services:
+ web:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    volumes:
+      - .:/app
+    command: gunicorn --bind 0.0.0.0:8000 guardian_pro.wsgi:application
+
+ db:
+  image: postgres:15
+  volumes:
+    - postgres_data:/var/lib/postgresql/data/
+  env_file:
+    - ./.env.prod.db
+
+ nginx:
+    image: nginx:latest
+    volumes:
+      - ./my_nginx:/etc/nginx/sites-available/my_nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - web

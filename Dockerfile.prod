@@ -1,0 +1,16 @@
+# Dockerfile.prod
+FROM python:3.10-slim-buster
+
+ENV PYTHONUNBUFFERED 1
+
+WORKDIR /app
+
+COPY requirements.txt /app/
+RUN pip install -r requirements.txt
+
+COPY . /app/
+
+# Collect static files
+RUN python manage.py collectstatic --noinput
+
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "guardian_pro.wsgi:application"]
